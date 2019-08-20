@@ -6,3 +6,4 @@ bottoken.txt
 
 #pycach
 __pycach__
+plugins/__pycache__/
