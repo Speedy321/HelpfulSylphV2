@@ -1,7 +1,8 @@
 {
     "bot":{
         "plugins":[
-            "plugins.HelpfulSylph"
+            "plugins.HelpfulSylph",
+            "plugins.XIVCharacter"
         ]
     }
 }
