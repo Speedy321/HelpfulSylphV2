@@ -4,6 +4,9 @@ from disco.types.message import MessageEmbed
 from . import CharaCard
 from .CharaCard import CharaCard
 
+from . import database
+from .database import dbSingle
+
 import requests
 import json
 
@@ -84,8 +87,16 @@ class XIVCharacter(Plugin):
 
             self.searchCharacter(fullServer, name)     
 
-    #Temp to test the player cards
     @Plugin.command('show', '<id:int>')
     def command_show(self, event, id):
         card = CharaCard(id)
         event.msg.reply(embed=card.getCardMsg())
+
+    @Plugin.command('iam', '<server:str> <name:str...>')
+    def command_iam(self, event, server, name):
+        # TODO: make work when api is fixed.
+        charID = 16452510
+        # self.searchCharacter(server, name)
+
+        dbSingle.addOrUpdateDiscord(charID, event.author.mention)
+        event.msg.reply(event.author.mention + " you are " + str(charID) + " [TEMP: need to get the char name from the api once it's fixed...]")
