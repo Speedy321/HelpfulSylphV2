@@ -12,7 +12,9 @@ import json
 import re
 
 class CharaCard:
-    fetchApiUrl = "https://ffxiv_api.bbqdroid.org/fetch.php?userid="
+    #enable debug prints
+    DEBUG = True
+
     cardGeneratorApiCardUrl = "https://www.ffxivprofilegenerator.com/get/"
     cardGeneratorApiUrl = "https://www.ffxivprofilegenerator.com/get/0/"
     cardGeneratorApiEndUrl = "/1/0/en/none/0/0"
@@ -30,15 +32,24 @@ class CharaCard:
         #print(self.jsonData)
 
     def getCardMsg(self):
+
+        if self.DEBUG:
+            print("[debug]CharaCard.getCardMsg()")
         data = dbSingle.getCardByUserID(self.charID)
         if data :
-            print(data)
+                if self.DEBUG:
+                    print("[debug]CharaCard.getCardMsg() data:")
+                    print(data)
+                    print("[debug]CharaCard.getCardMsg() data len:"+str(len(data)))
+
                 if len(data) < 2:
                     self.fetchCardFromGenerator()
                 else:
                     self.cardID = data[1]
         else:
-            print("Empty data")
+
+                if self.DEBUG:
+                    print("[debug]CharaCard.getCardMsg() Empty data")
             self.fetchCardFromGenerator()
 
         if self.cardID > 0:
@@ -47,7 +58,9 @@ class CharaCard:
         return self.embedMsg
 
     def fetchCardFromGenerator(self):
-        print("generate "+str(self.charID))
+        
+        if self.DEBUG:
+            print("[debug]CharaCard.fetchCardFromGenerator() ID = "+str(self.charID))
         url = self.cardGeneratorApiUrl + str(self.charID) + self.cardGeneratorApiEndUrl
         response = requests.get(url)
         match = re.search("(?:https:\/\/www\.ffxivprofilegenerator\.com\/get\/)(\d{1,10})", response.text)

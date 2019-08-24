@@ -34,6 +34,7 @@ class DataBase():
 
     #returns the cardID if there is one, else returns 0. you need to filter outside of this.
     def getCardByUserID(self, userID):
+        print("[debug] dbSingle.getCardByUserID("+str(userID)+")")
         self.hook = sqlite3.connect(self.db)
         req = "SELECT CARDID FROM charaDic WHERE ID = " + str(userID)
         cursor = self.hook.execute(req)
