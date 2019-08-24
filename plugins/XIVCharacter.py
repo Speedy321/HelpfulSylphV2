@@ -58,9 +58,6 @@ class XIVCharacter(Plugin):
 
     # "@Bot iam joe blo Gilgamesh" => links you with the first result for "joe blo" on Gilgamesh
     @Plugin.command('iam', '<name:str> <surname:str> <server:str>')
-        # TODO: make work when api is fixed.
-        charID = 16452510
-        # self.searchCharacter(server, name)
-
-        dbSingle.addOrUpdateDiscord(charID, event.author.mention)
-        event.msg.reply(event.author.mention + " you are " + str(charID) + " [TEMP: need to get the char name from the api once it's fixed...]")
+    def command_iam(self, event, name, surname, server):
+        dbSingle.addOrUpdateDiscord(FFXIV_api.getCharID((name+" "+surname), server), event.author.mention)
+        event.msg.reply(event.author.mention + " you are " + str(name+" "+surname) + " [TEMP: need to get the char name from the api once it's fixed...]")
