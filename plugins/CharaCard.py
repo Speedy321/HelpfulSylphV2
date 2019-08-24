@@ -4,6 +4,7 @@
 
 from . import database
 from .database import dbSingle 
+from .ffxiv_api import FFXIV_api
 
 from disco.types.message import MessageEmbed, MessageEmbedImage
 
@@ -18,8 +19,6 @@ class CharaCard:
     cardGeneratorApiCardUrl = "https://www.ffxivprofilegenerator.com/get/"
     cardGeneratorApiUrl = "https://www.ffxivprofilegenerator.com/get/0/"
     cardGeneratorApiEndUrl = "/1/0/en/none/0/0"
-
-    embedMsg = MessageEmbed()
 
     charID = 0
     cardID = 0
@@ -44,11 +43,8 @@ class CharaCard:
                     print("[debug]CharaCard.getCardMsg() data:")
                     print(data)
                     print("[debug]CharaCard.getCardMsg() data len:"+str(len(data)))
-
-                if len(data) < 2:
-                    self.fetchCardFromGenerator()
-                else:
-                    self.cardID = data[1]
+                    
+                self.cardID = data[0]
             else:
 
                 if self.DEBUG:
@@ -56,9 +52,22 @@ class CharaCard:
 
                 self.fetchCardFromGenerator()
 
-            self.embedMsg.image = MessageEmbedImage(url = self.cardGeneratorApiCardUrl + str(self.cardID))
+            charData = FFXIV_api.fetchCharByID(self.charID)
+            msg = "\n"+\
+                " "+charData['Name']+" from "+charData['Server']+".\n"+\
+                " Last seen as a level "+str(charData['ActiveClassJob']['Level'])+" "
+            if charData['ActiveClassJob']['Level'] > 30:
+                msg += charData['ActiveClassJob']['JobName']+". "
+            else:
+                msg += charData['ActiveClassJob']['ClassName']+". "
+            msg += "\n <https://na.finalfantasyxiv.com/lodestone/character/"+str(self.charID)+"/>"
 
-        return self.embedMsg
+            msgEmb = MessageEmbed()
+            msgEmb.image = MessageEmbedImage(url=(self.cardGeneratorApiCardUrl + str(self.cardID)))
+            msgEmb.description = msg
+            msgEmb.color = self.charID
+
+        return msgEmb
 
     def fetchCardFromGenerator(self):
         
