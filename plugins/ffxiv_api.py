@@ -70,16 +70,22 @@ class FFXIV_api:
         if cls.DEBUG:
             print("[debug] fetchChar("+str(name)+", "+str(server)+")")
 
-        charID = cls.getCharID(name, server)
+        return cls.fetchCharByID(cls.getCharID(name, server))
+
+    @classmethod
+    def fetchCharByID(cls, charID):
+        if cls.DEBUG:
+            print("[debug] fetchCharByID("+str(charID)+")")
 
         url = cls.apiUrl+cls.fetchCharEndpoint+str(charID)
 
-        res = requests(url)
+        res = requests.get(url)
         data = res.json()
 
         #TODO: implement error checking
 
         return data
+
 
     @classmethod
     def getCharID(cls, name, server):        
