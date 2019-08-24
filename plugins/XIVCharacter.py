@@ -7,6 +7,8 @@ from .CharaCard import CharaCard
 from . import database
 from .database import dbSingle
 
+from .ffxiv_api import FFXIV_api
+
 import requests
 import json
 
@@ -21,36 +23,38 @@ class XIVCharacter(Plugin):
 
     serverList = []
 
-    def getServers(self):
-        if not self.serverList:
-            resp = requests.get(self.apiUrl+self.serverListUrl)
-            self.serverList = json.loads(resp.json())
+    def load(self, ctx):
+        self.serverList = FFXIV_api.getServers()
+        super(XIVCharacter, self).load(ctx)
 
-    #search for a character in the database, returns the json payload/object
-    def searchCharacter(self, server, name):
-        url = self.apiUrl + self.charSearchUrl + name + self.addServerUrl + server
-        print("url: "+ url)
-        response = requests.get(url)
+    # "@Bot search joe blo Gilgamesh" => search "joe blo" on Gilgamesh
+    # "@Bot search joe Gilgamesh"     => search "joe Gilgamesh" on All
+    # "@Bot search joe $Gilgamesh"    => search "joe" on Gilgamesh
+    @Plugin.command('search', '<name:str> [surname:str] [server:str...]')
+    def command_search(self, event, name, surname=None, server=None):
+        #check if surname is used as a server
+        if not server:
+            if surname[0] == '$':
+                server = surname[1:]
+                surname = None
+               
+        characters = FFXIV_api.searchCharacter((name+" "+surname), server)
+        if (not characters[0] == "TMR") and (not characters[0] == "NA"):
+            charNum = len(characters)
+            #TODO: Implement message sending
 
-        print(response.json())
-
-    @Plugin.command('search', '<server:str> <name:str...>')
-    def command_search(self, event, server, name):
-
-        #string cleanup
+    # "@Bot show joe blo Gilgamesh" => show first result for "joe blo" on Gilgamesh
+    @Plugin.command('show', '<name:str> <surname:str> <server:str...>')
+    def command_show(self, event, name, surname, server):
+        #server cleanup
         server = server.lower().capitalize()
-        self.getServers()
 
+        #check if server is valid
         if server in self.serverList:
-            print("[HLSYL] Server "+server+" is in master list.")
-            print("[HLSYL] Searching for character "+name+" on server "+server)
-
-            self.searchCharacter(server, name)
-
-    @Plugin.command('show', '<id:int>')
-    def command_show(self, event, id):
-        card = CharaCard(id)
-        event.msg.reply(embed=card.getCardMsg())
+            card = CharaCard(FFXIV_api.getCharID((name+" "+surname), server))
+            event.msg.reply(embed=card.getCardMsg())
+        else:
+            event.msg.reply("You need to provide a valid Server. \n> @Bot show <name> <surname> <Server>")
 
     @Plugin.command('iam', '<server:str> <name:str...>')
     def command_iam(self, event, server, name):

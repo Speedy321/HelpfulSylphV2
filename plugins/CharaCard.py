@@ -33,7 +33,10 @@ class CharaCard:
         data = dbSingle.getCardByUserID(self.charID)
         if data :
             print(data)
-            self.cardID = data[1]
+                if len(data) < 2:
+                    self.fetchCardFromGenerator()
+                else:
+                    self.cardID = data[1]
         else:
             print("Empty data")
             self.fetchCardFromGenerator()
