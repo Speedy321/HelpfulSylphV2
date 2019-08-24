@@ -20,17 +20,20 @@ class DataBase():
         print("[HLSYL] Database initialized.")
         self.hook.close()
 
-    def addOrUpdate(self, userID, cardID, discordID):
+    def addOrUpd(self, request):
         self.hook = sqlite3.connect(self.db)
-        self.hook.execute("INSERT OR REPLACE INTO charaDic (ID, CARDID, DISCID) VALUES(?, ?, ?)", (userID, cardID, discordID))
+        self.hook.execute(request)
         self.hook.commit()
         self.hook.close()
         
+    def addOrUpdate(self, userID, cardID, discordID):
+        self.addOrUpd("INSERT OR REPLACE INTO charaDic (ID, CARDID, DISCID) VALUES("+str(userID)+", "+str(cardID)+", \""+str(discordID)+"\")")
+
     def addOrUpdateCard(self, userID, cardID):
-        self.addOrUpdate(userID, cardID, 0)
+        self.addOrUpd("INSERT OR REPLACE INTO charaDic (ID, CARDID, DISCID) VALUES("+str(userID)+", "+str(cardID)+", (SELECT DISCID FROM charaDic WHERE ID = "+str(userID)+"))")
 
     def addOrUpdateDiscord(self, userID, discordID):
-        self.addOrUpdate(userID, 0, discordID)
+        self.addOrUpd("INSERT OR REPLACE INTO charaDic (ID, CARDID, DISCID) VALUES("+str(userID)+", (SELECT CARDID FROM charaDic WHERE ID = "+str(userID)+"), \""+str(discordID)+"\")")
 
     #returns the cardID if there is one, else returns 0. you need to filter outside of this.
     def getCardByUserID(self, userID):
