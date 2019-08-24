@@ -45,7 +45,28 @@ class XIVCharacter(Plugin):
         characters = FFXIV_api.searchCharacter(name, server)
         if (not characters[0] == "TMR") and (not characters[0] == "NA"):
             charNum = len(characters)
-            #TODO: Implement message sending
+            msg = "You searched for `" + name + "` " 
+            if server:
+                msg += "on server `"+ server+"`. "
+            else :
+                msg += "on all servers. "
+            msg +="\n I found `"+str(charNum)+"` result"
+            if charNum > 1:
+                msg +="s, here are the first few: "
+            else: 
+                msg += ", here it is:"
+            for character in characters:
+                if len(msg) < 800:
+                    msg +="\n> "+character['Name']+" on "+character['Server']+".\n> <https://na.finalfantasyxiv.com/lodestone/character/"+character['ID']+"/> \n"
+        
+            event.msg.reply(msg)
+        elif characters[0] == "TMR":
+            event.msg.reply("I've got too many results for your search. Please tell me the full name and/or the server to help me.\n> use $<Server> if you're not giving `name surname` beforhand.")
+        elif characters[0] == "NA":
+            event.msg.reply("I've got no result for your search. Please make sure you've written everything the right way.")
+        else:
+            event.msg.reply("Something went very wrong and I have not recieved anything from my information broker. Please check with my devs to see what went wrong. (check @Bot info for devs)")
+            print("[HLSYL] [ERROR] No information AT ALL from API for search: "+name+" "+str(server))
 
     # "@Bot show joe blo Gilgamesh" => show first result for "joe blo" on Gilgamesh
     @Plugin.command('show', '<name:str> <surname:str> <server:str>')
