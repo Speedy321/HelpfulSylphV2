@@ -30,7 +30,7 @@ class XIVCharacter(Plugin):
     # "@Bot search joe blo Gilgamesh" => search "joe blo" on Gilgamesh
     # "@Bot search joe Gilgamesh"     => search "joe Gilgamesh" on All
     # "@Bot search joe $Gilgamesh"    => search "joe" on Gilgamesh
-    @Plugin.command('search', '<name:str> [surname:str] [server:str...]')
+    @Plugin.command('search', '<name:str> [surname:str] [server:str]')
     def command_search(self, event, name, surname=None, server=None):
         #check if surname is used as a server
         if not server:
@@ -44,7 +44,7 @@ class XIVCharacter(Plugin):
             #TODO: Implement message sending
 
     # "@Bot show joe blo Gilgamesh" => show first result for "joe blo" on Gilgamesh
-    @Plugin.command('show', '<name:str> <surname:str> <server:str...>')
+    @Plugin.command('show', '<name:str> <surname:str> <server:str>')
     def command_show(self, event, name, surname, server):
         #server cleanup
         server = server.lower().capitalize()
@@ -56,8 +56,8 @@ class XIVCharacter(Plugin):
         else:
             event.msg.reply("You need to provide a valid Server. \n> @Bot show <name> <surname> <Server>")
 
-    @Plugin.command('iam', '<server:str> <name:str...>')
-    def command_iam(self, event, server, name):
+    # "@Bot iam joe blo Gilgamesh" => links you with the first result for "joe blo" on Gilgamesh
+    @Plugin.command('iam', '<name:str> <surname:str> <server:str>')
         # TODO: make work when api is fixed.
         charID = 16452510
         # self.searchCharacter(server, name)
