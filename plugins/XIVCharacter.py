@@ -33,12 +33,16 @@ class XIVCharacter(Plugin):
     @Plugin.command('search', '<name:str> [surname:str] [server:str]')
     def command_search(self, event, name, surname=None, server=None):
         #check if surname is used as a server
-        if not server:
+        if (not server) and (surname):
             if surname[0] == '$':
                 server = surname[1:]
                 surname = None
-               
-        characters = FFXIV_api.searchCharacter((name+" "+surname), server)
+        
+        #add surname if non null
+        if surname:
+            name = name+" "+surname
+
+        characters = FFXIV_api.searchCharacter(name, server)
         if (not characters[0] == "TMR") and (not characters[0] == "NA"):
             charNum = len(characters)
             #TODO: Implement message sending

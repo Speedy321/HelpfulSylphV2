@@ -28,14 +28,12 @@ class FFXIV_api:
         if cls.DEBUG:
             print("[debug] searchCharacter("+str(name)+", "+str(server)+")")
 
-        #server cleanup
-        server = server.lower().capitalize()
-
         url = cls.apiUrl+cls.charSearchEndpoint
 
         if not server:
             url += name
         else:
+            server = server.lower().capitalize()
             url += (name + cls.charSearchServerParam + server)
 
         return cls.requestChar(url, False)
